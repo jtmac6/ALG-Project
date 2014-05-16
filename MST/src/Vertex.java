@@ -71,6 +71,11 @@ public class Vertex implements Comparable<Vertex> {
 		
 	}
 	
+	public String ToString(){
+		
+		return "Vertex: " +  this.id;
+	}
+	
 	@Override
 	public int compareTo(Vertex v) {
 		

@@ -28,9 +28,10 @@ public class Heap {
 
     public Edge remove() 
     {
-        if (! isEmpty()) {
+        if (!isEmpty()) {
             Edge min = peek();
             edges.set(1,edges.get(size));
+            edges.remove(edges.get(size));
             size--;
             if (size > 1) {
                 heapify(1);

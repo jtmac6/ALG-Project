@@ -135,7 +135,7 @@ public class Graph {
 		
 		for(int i = 0; i<edgeList.size();i++){
 			Edge temp = edgeList.get(i);
-			if(temp.left.id == e.right.id){
+			if(temp.src.id == e.dest.id){
 				return true;
 			}
 		}
@@ -243,8 +243,8 @@ public class Graph {
 		while(edgeCount < (n-1)){
 			
 			Edge e = edgeList.remove(0);
-			Vertex v1 = e.left;
-			Vertex v2 = e.right;
+			Vertex v1 = e.src;
+			Vertex v2 = e.dest;
 			if(!Vertex.checkCycle(v1, v2)){
 				Vertex.union(v1, v2);
 				edgeCount++;
@@ -258,55 +258,58 @@ public class Graph {
 	
 	public static ArrayList<Edge> Prim(ArrayList<Edge> edgeList){
 		
-		printEdgeList(edgeList);
-		ArrayList<Edge> MST = new ArrayList<Edge>();
+		//printEdgeList(edgeList);
+		ArrayList<Edge> mstEdges = new ArrayList<Edge>();
+		ArrayList<Vertex> mstNodes = new ArrayList<Vertex>();
 		Heap h = new Heap();
-		int mstSize = 1;
-		Vertex curr = vertices.get(0);
-		curr.inMST = true;
 		
-		//loop until the MST contains all the nodes
-		while(mstSize!=vertices.size()){
+		Vertex curr = vertices.get(0);
+		curr.inMST=true;
+		mstNodes.add(curr);
+		
+		while(mstNodes.size()<vertices.size()){
 			
-			//the time complexity is a bit sketchy here
-			//go through the nodes adjacent to the current node
-			for(int i = 0; i<curr.connections.size(); i++){
-				
-				Vertex adjv = curr.connections.get(i);
-				if(!adjv.inMST){
-					//get the edges to that node.
-					for(int j = 0; j<edgeList.size();j++){
-						Edge e = edgeList.get(j);
-						if(e.right.id == curr.id && e.left.id == adjv.id){
-							System.out.println("Adding: "+ e.ToString());
-							h.insert(e);
-						}
-					}
+			//System.out.println("CURRENT: "+ curr.id);
+			
+			for(int i = 0; i<curr.edgelist.size(); i++){
+				if(!curr.edgelist.get(i).dest.inMST){
+					h.insert(curr.edgelist.get(i));
+					//System.out.println("Adding Edge: "+curr.edgelist.get(i).ToString()+ " to HEAP");
 				}
-				
 			}
 			
-			//get the smallest edge out of the heap
-			Edge smallest = h.remove();
-			//if the adjacent node is not in the MST, add it
-			if(smallest!=null && smallest.left!=null){
+			if(!h.isEmpty()){
 				
-				if(!smallest.left.inMST){
+				Edge smallest = h.remove();
+				if(!smallest.dest.inMST){
+					smallest.dest.inMST = true;
+					mstNodes.add(smallest.dest);;
+					curr = smallest.dest;
 					
-					smallest.left.inMST=true;
-					curr = smallest.left;
-					MST.add(smallest);
-					mstSize++;	
+					mstEdges.add(smallest);
+					//System.out.println("Adding Edge: "+smallest.ToString()+ " to MST");
+					
+					//System.out.println("Adding Vertex: "+smallest.dest.ToString()+ " to MST");
 				}
-
+				
+			}else{
+				System.out.println("Heap is empty");
 			}
 		}
-		return MST;
+		return mstEdges;
+	}
+	
+	public static void resetNodes(){
+		
+		for(int i = 0; i<vertices.size(); i++){
+			vertices.get(i).inMST=false;
+		}
+		
 	}
 	
 	//Utility Methods
 	//Prints the edges in the edge list using the ToString method in the edge class
-	public static void printEdgeList( ArrayList<Edge> edges){
+ 	public static void printEdgeList( ArrayList<Edge> edges){
 		for(int i = 0; i<edges.size(); i++){
 			System.out.println(edges.get(i).ToString());
 		}
@@ -642,6 +645,7 @@ public class Graph {
 		edgeList = assembleEdgeListWithMatrix();
 		//printEdgeList(edgeList);
 		ArrayList<Edge> mstEdges1 = Prim(edgeList);
+		quickSort(mstEdges1);
 		//edge printout
 		printEdgeList(mstEdges1);
 		System.out.println();
@@ -654,6 +658,7 @@ public class Graph {
 		System.out.println("Runtime: "+runtime1+" milliseconds");
 		System.out.println();
 		edgeList = new ArrayList<Edge>();
+		resetNodes();
 		
 		System.out.println("===================================");
 		System.out.println("PRIM WITH ADJACENCY LIST");
@@ -661,6 +666,7 @@ public class Graph {
 		edgeList = assembleEdgeListWithList();
 		//printEdgeList(edgeList);
 		ArrayList<Edge> mstEdges4 = Prim(edgeList);
+		quickSort(mstEdges4);
 		//edge printout
 		printEdgeList(mstEdges4);
 		System.out.println();
@@ -673,6 +679,7 @@ public class Graph {
 		System.out.println("Runtime: "+runtime4+" milliseconds");
 		System.out.println();
 		edgeList = new ArrayList<Edge>();
+		resetNodes();
 	}
 	
 	//Prints out the adjacency matrix

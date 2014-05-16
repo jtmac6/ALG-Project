@@ -2,15 +2,19 @@
 
 public class Edge implements Comparable<Edge> {
 	
-	Vertex left;
-	Vertex right;
+	int id;
+	Vertex src;
+	Vertex dest;
 	int weight;
+	String name;
 	
 	public Edge(Vertex v1, Vertex v2, int w){
 		
-		this.left = v1;
-		this.right = v2;
+		this.src = v1;
+		this.dest = v2;
 		this.weight = w;
+		this.name = src.id + "--"+weight+"--"+dest.id;
+		
 	}
 	
 	@Override
@@ -24,15 +28,15 @@ public class Edge implements Comparable<Edge> {
 		}else{
 			
 			
-			if (this.left.id > e.left.id ){
+			if (this.src.id > e.src.id ){
 				return 1;
-			}else if (this.left.id < e.left.id){
+			}else if (this.src.id < e.src.id){
 			   return -1;
 			}else{
 				
-				if (this.right.id > e.right.id ){
+				if (this.dest.id > e.dest.id ){
 					return 1;
-				}else if (this.right.id < e.right.id){
+				}else if (this.dest.id < e.dest.id){
 				   return -1;
 				}else{
 				   return 0;
@@ -44,7 +48,7 @@ public class Edge implements Comparable<Edge> {
 	
 	
 	public String ToString(){
-		return left.id + " " + right.id + " weight = "+ weight;
+		return src.id + " " + dest.id + " weight = "+ weight;
 	}
 	
 }
